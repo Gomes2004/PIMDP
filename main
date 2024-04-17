@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h> // Biblioteca para usar a função isdigit()
+
+// Estrutura para representar um usuário
+typedef struct {
+    char nome[100];
+    char cpf[12]; // CPF terá 11 caracteres e mais um para o caractere nulo '\0'
+} Usuario;
+
+int main(int argc, char const *argv[])
+{
+    // Cadastro do usuário
+    Usuario usuario;
+    printf("Bem vindo ao nosso museu multitematico!\n");
+
+    // Declaração da variável contemNumeros
+    int contemNumeros;
+
+    // Solicitar e validar o nome do usuário
+    do {
+        printf("Por favor, informe seu nome para cadastro (limite de 50 caracteres e sem números): ");
+        fgets(usuario.nome, 100, stdin); // Captura o nome, incluindo espaços em branco
+
+        // Remover o caractere de nova linha ('\n') do final da string nome, se necessário
+        if (usuario.nome[strlen(usuario.nome) - 1] == '\n') {
+            usuario.nome[strlen(usuario.nome) - 1] = '\0';
+        }
+
+        // Verificar se o nome tem mais de 50 caracteres
+        if (strlen(usuario.nome) > 50) {
+            printf("Erro: O nome inserido possui mais de 50 caracteres. Por favor, insira novamente.\n");
+        }
+
+        // Verificar se o nome contém números
+        contemNumeros = 0;
+        for (int i = 0; usuario.nome[i] != '\0'; i++) {
+            if (isdigit(usuario.nome[i])) {
+                contemNumeros = 1;
+                break;
+            }
+        }
+        if (contemNumeros) {
+            printf("Erro: O nome inserido contém números. Por favor, insira um nome sem números.\n");
+        }
+    } while (strlen(usuario.nome) > 50 || contemNumeros);
+
+    // Solicitar e validar o CPF do usuário
+    printf("CPF: ");
+    fgets(usuario.cpf, 12, stdin); // Captura o CPF
+
+    // Remover o caractere de nova linha ('\n') do final da string CPF, se necessário
+    if (usuario.cpf[strlen(usuario.cpf) - 1] == '\n') {
+        usuario.cpf[strlen(usuario.cpf) - 1] = '\0';
+    }
+
+    // Exibir os dados cadastrados
+    printf("\nDados cadastrados com sucesso:\n");
+    printf("Nome: %s\n", usuario.nome);
+    printf("CPF: %s\n", usuario.cpf);
+
+    printf("\nExplorando Novas Rotas: A Arte Encontra seu caminho na Esperanca\n");
+    printf("PROGRAMACAO\n");
+
+    printf("1. 100 anos da semana de arte moderna: Uma celebracao do movimento que revolucionou a arte brasileira no seculo XX, marcando um marco cultural e historico.\n");
+
+    printf("2. 150 anos de Santos Dumont: Uma homenagem ao pai da aviacao, cujas inovacoes e visao moldaram o futuro dos voos e da exploracao aerea.\n");
+
+    printf("3. Jogos olimpicos de Paris 2024: Uma reflexao sobre o espirito esportivo e a diversidade cultural que unem nacoes e inspiram o mundo.\n");
+
+    printf("4. Preservacao do Automobilismo: Uma exibicao dedicada a historia, evolucao e importancia cultural do automobilismo, destacando sua relevancia no cenario mundial.\n");
+
+    return 0;
+}
