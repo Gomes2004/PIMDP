@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+typedef struct {
+    char nome[100];
+    char cpf[12];
+    int idade;
+    char PCD;
+} Usuario;
+
+void mostrarCartaz() {
+    // Print the box
+    printf("+----------------------------------------+\n");
+    printf("|                 EM CARTAZ              |\n");
+    printf("+----------------------------------------+\n");
+    printf("| 1. 100 anos da semana de arte moderna. |\n");
+    printf("| 2. 150 anos de Santos Dumont.          |\n");
+    printf("| 3. Jogos olímpicos de Paris 2024.     |\n");
+    printf("| 4. 24 Horas de Le Mans 1923 a 2024.    |\n");
+    printf("+----------------------------------------+\n");
+}
+
+void gerarRelatorio(Usuario usuarios[], int numUsuarios) {
+    FILE *arquivo = fopen("relatorio.csv", "w");
+    if (arquivo == NULL) {
+        printf("Erro ao criar o arquivo CSV.\n");
+        return;
+    }
+
+    // Escrever o cabeçalho do arquivo CSV
+    fprintf(arquivo, "Nome,Idade,CPF\n");
+
+    // Escrever os dados dos usuários no arquivo CSV
+    for (int i = 0; i < numUsuarios; i++) {
+        fprintf(arquivo, "%s,%d,%s\n", usuarios[i].nome, usuarios[i].idade, usuarios[i].cpf);
+    }
+
+    fclose(arquivo);
+    printf("Relatório gerado com sucesso em 'relatorio.csv'.\n");
+}
+
+void venderBilhetes(Usuario usuarios[], int numUsuarios) {
+    int precoCheia = 50;
+    int precoMeia = 25;
+    int totalArrecadado = 0;
+
+    for (int i = 0; i < numUsuarios; i++) {
+        int preco = 0;
+
+        if (usuarios[i].idade < 12 || usuarios[i].idade > 65 || usuarios[i].PCD == 'S' || usuarios[i].PCD == 's') {
+            preco = precoMeia;
+        } else {
+            preco = precoCheia;
+        }
+
+        totalArrecadado += preco;
+        printf("Usuario %d: R$%d\n", i + 1, preco);
+    }
+
+    printf("Total arrecadado: R$%d\n", totalArrecadado);
+}
+
+int main(int argc, char const *argv[]) {
+    Usuario usuarios[8];
+    int numUsuarios = 0; // Inicializa o contador de usuários
+    char resposta[4];
+
+    printf("Bem vindo ao museu Rusty Lake!\n");
+
+    do {
+        // Sistema de cadastro
+        printf("\nPor favor, preencha as informações abaixo para cada usuario:\n");
+
+        printf("\nUsuario %d:\n", numUsuarios + 1);
+
+        printf("Nome: ");
+        fgets(usuarios[numUsuarios].nome, sizeof(usuarios[numUsuarios].nome), stdin);
+        usuarios[numUsuarios].nome[strcspn(usuarios[numUsuarios].nome, "\n")] ='\0'; // Remove o caractere de nova linha
+
+        printf("Idade: ");
+        scanf("%d", &usuarios[numUsuarios].idade);
+        getchar(); // Limpa o buffer do teclado
+
+        printf("CPF: ");
+        fgets(usuarios[numUsuarios].cpf, sizeof(usuarios[numUsuarios].cpf), stdin);
+        usuarios[numUsuarios].cpf[strcspn(usuarios[numUsuarios].cpf, "\n")] = '\0'; // Remove o caractere de nova linha
+
+        // Verifica se o CPF é válido
+        if (strlen(usuarios[numUsuarios].cpf) != 11) {
+            printf("CPF inválido. Por favor, digite 11 números.\n");
+            return 1;
+        }
+
+        // Validação do CPF
+        for (int j = 0; j < strlen(usuarios[numUsuarios].cpf); j++) {
+            if (!isdigit(usuarios[numUsuarios].cpf[j])) {
+                printf("CPF inválido. Por favor, digite apenas números.\n");
+                return 1;
+            }
+        }
+
+        printf("PCD (S/N): ");
+        scanf(" %c", &usuarios[numUsuarios].PCD); // Corrige o problema de buffer
+        getchar(); // Limpa o buffer do teclado
+
+        printf("\n"); // Adiciona uma linha vazia antes da pergunta
+
+        printf("Deseja adicionar outro registro? (sim ou nao): ");
+        fgets(resposta, sizeof(resposta), stdin);
+        resposta[strcspn(resposta, "\n")] = '\0'; // Remove o caractere de nova linha
+
+        if (strcmp(resposta, "sim")!= 0 && strcmp(resposta, "nao")!= 0) {
+            printf("Resposta inválida. Por favor, responda 'sim' ou 'nao'.\n");
+        } else if (strcmp(resposta, "nao") == 0) {
+            mostrarCartaz(); // Mostrar o EM CARTAZ antes de sair
+        }
+
+        numUsuarios++; // Incrementa o contador de usuários apenas se a resposta for 'sim'
+
+    } while (strcmp(resposta, "sim") == 0 && numUsuarios < 8); // Adiciona a condição para o número máximo de usuários
+
+    gerarRelatorio(usuarios, numUsuarios);
+    venderBilhetes(usuarios, numUsuarios);
+
+    return 0;
+}
